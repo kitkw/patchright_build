@@ -1,5 +1,5 @@
-# 使用 python:3.10.19-bookworm 镜像作为基础镜像
-FROM python:3.10.19-bookworm
+# 使用 Python 3.10.15 slim 镜像作为基础镜像
+FROM python:3.10.15-slim-bookworm
 
 # 设置工作目录
 WORKDIR /app
@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y \
     iproute2 \
     procps \
     cron \
+    fonts-noto-cjk \
+    fonts-noto-color-emoji \
+    locales \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
