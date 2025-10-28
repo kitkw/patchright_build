@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y \
     libcups2 \
     fonts-noto-color-emoji \
     fonts-noto-cjk \
+    locales \
     ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
