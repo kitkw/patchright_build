@@ -7,7 +7,7 @@ WORKDIR /app
 # 复制 requirements.txt
 COPY requirements.txt .
 
-# 先安装系统依赖
+# 安装系统依赖和 Python 包
 RUN apt-get update && apt-get install -y \
     iproute2 \
     procps \
@@ -15,11 +15,8 @@ RUN apt-get update && apt-get install -y \
     fonts-noto-cjk \
     fonts-noto-color-emoji \
     locales \
+    && pip install --no-cache-dir -r requirements.txt \
+    && patchright install chromium \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 Python 包
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 安装 Chrome
-RUN patchright install chrome
