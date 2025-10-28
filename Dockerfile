@@ -7,16 +7,41 @@ WORKDIR /app
 # 复制 requirements.txt
 COPY requirements.txt .
 
-# 安装系统依赖和 Python 包
+# 先安装系统依赖
 RUN apt-get update && apt-get install -y \
     iproute2 \
     procps \
     cron \
-    fonts-noto-cjk \
+    libglib2.0-0 \
+    libnss3 \
+    libx11-6 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libxext6 \
+    libxfixes3 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libxkbcommon0 \
+    libxcb1 \
+    libnspr4 \
+    libexpat1 \
+    libdbus-1-3 \
+    libatspi2.0-0 \
+    libcups2 \
     fonts-noto-color-emoji \
-    locales \
-    && pip install --no-cache-dir -r requirements.txt \
-    && patchright install chromium \
+    fonts-noto-cjk \
+    ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# 安装 Python 包
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 安装 chromium
+RUN patchright install chromium
