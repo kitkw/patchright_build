@@ -45,12 +45,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
-      - name: Delete untagged images
-        uses: Chizkiyahu/delete-untagged-ghcr-action@v1
+      - name: Clean untagged images
+        uses: dataaxiom/ghcr-cleaner@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository_owner: ${{ github.repository_owner }}
-          package_name: patchright
-          untagged_only: true
-          owner_type: user
+          package: patchright
+          owner: ${{ github.repository_owner }}
+
 
