@@ -1,0 +1,65 @@
+# 使用 Python 3.10.15 slim 镜像作为基础镜像
+FROM python:3.10.15-slim-bookworm
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制 requirements.txt
+COPY requirements.txt .
+
+# 安装系统依赖和 Python 包
+# --no-install-recommends，表示只装你明确列出的包，不会自动拉取推荐包
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcairo2 \
+    libcups2 \
+    libdbus-1-3 \
+    libexpat1 \
+    libgbm1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libpango-1.0-0 \
+    libx11-6 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    libxcb1 \
+    fonts-noto-color-emoji \
+    fonts-noto-cjk \
+    locales \
+    ca-certificates \
+    iproute2 \
+    procps \
+    cron \
+    wget \
+    curl \
+    jq \
+    unzip \
+    && pip install --no-cache-dir -r requirements.txt \
+    \
+    # 🔽 自动获取最新版 Stable Chrome 浏览器
+    && echo "Fetching latest Chrome ..." \
+    && VERSION_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json \
+        | jq -r '.channels.Stable.downloads["chrome"][] | select(.platform=="linux64") | .url') \
+    && echo "Downloading from: $VERSION_URL" \
+    && wget -O /tmp/chrome-linux64.zip "$VERSION_URL" \
+    && unzip /tmp/chrome-linux64.zip -d /opt/chrome \
+    && ln -sf /opt/chrome/chrome-linux64/chrome /usr/local/bin/chrome \
+    && rm -rf /tmp/chrome-linux64.zip \
+    \
+    # 清理缓存，减小体积
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置环境变量
+# 如果你不确定缺什么依赖，可以在容器里运行
+# ldd /usr/local/bin/chrome | grep "not found"
+ENV CHROME_PATH=/usr/local/bin/chrome

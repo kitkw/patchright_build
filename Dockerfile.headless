@@ -10,28 +10,28 @@ COPY requirements.txt .
 # 安装系统依赖和 Python 包
 # --no-install-recommends，表示只装你明确列出的包，不会自动拉取推荐包
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcairo2 \
+    libcups2 \
+    libdbus-1-3 \
+    libexpat1 \
+    libgbm1 \
     libglib2.0-0 \
-    libnss3 \
+    libgtk-3-0 \
     libnspr4 \
+    libnss3 \
+    libpango-1.0-0 \
     libx11-6 \
     libxcomposite1 \
     libxdamage1 \
-    libxrandr2 \
     libxext6 \
     libxfixes3 \
-    libxcb1 \
     libxkbcommon0 \
-    libgbm1 \
-    libasound2 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
-    libpango-1.0-0 \
-    libcairo2 \
-    libexpat1 \
-    libdbus-1-3 \
-    libatspi2.0-0 \
-    libcups2 \
+    libxrandr2 \
+    libxcb1 \
     fonts-noto-color-emoji \
     fonts-noto-cjk \
     locales \
@@ -45,7 +45,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && pip install --no-cache-dir -r requirements.txt \
     \
-    # 🔽 自动获取最新版 Chrome Headless Shell
+    # 🔽 自动获取最新版 Stable Chrome Headless Shell
     && echo "Fetching latest Chrome Headless Shell ..." \
     && VERSION_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json \
         | jq -r '.channels.Stable.downloads["chrome-headless-shell"][] | select(.platform=="linux64") | .url') \
