@@ -7,29 +7,27 @@ WORKDIR /app
 # 复制 requirements.txt
 COPY requirements.txt .
 
-# 先安装系统依赖
-RUN apt-get update && apt-get install -y \
-    iproute2 \
-    procps \
-    cron \
+# 安装系统依赖和 Python 包
+# --no-install-recommends，表示只装你明确列出的包，不会自动拉取推荐包
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libnss3 \
+    libnspr4 \
     libx11-6 \
     libxcomposite1 \
     libxdamage1 \
     libxrandr2 \
+    libxext6 \
+    libxfixes3 \
+    libxcb1 \
+    libxkbcommon0 \
     libgbm1 \
     libasound2 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
     libgtk-3-0 \
-    libxext6 \
-    libxfixes3 \
     libpango-1.0-0 \
     libcairo2 \
-    libxkbcommon0 \
-    libxcb1 \
-    libnspr4 \
     libexpat1 \
     libdbus-1-3 \
     libatspi2.0-0 \
@@ -38,11 +36,30 @@ RUN apt-get update && apt-get install -y \
     fonts-noto-cjk \
     locales \
     ca-certificates \
+    iproute2 \
+    procps \
+    cron \
+    wget \
+    curl \
+    jq \
+    unzip \
+    && pip install --no-cache-dir -r requirements.txt \
+    \
+    # 🔽 自动获取最新版 Chrome Headless Shell
+    && echo "Fetching latest Chrome Headless Shell ..." \
+    && VERSION_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json \
+        | jq -r '.channels.Stable.downloads["chrome-headless-shell"][] | select(.platform=="linux64") | .url') \
+    && echo "Downloading from: $VERSION_URL" \
+    && wget -O /tmp/chrome-headless-shell.zip "$VERSION_URL" \
+    && unzip /tmp/chrome-headless-shell.zip -d /opt/chrome-headless-shell \
+    && ln -sf /opt/chrome-headless-shell/chrome-headless-shell-linux64/chrome-headless-shell /usr/local/bin/chrome-headless-shell \
+    && rm -rf /tmp/chrome-headless-shell.zip \
+    \
+    # 清理缓存，减小体积
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 Python 包
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 安装 chromium
-RUN patchright install chromium
+# 设置环境变量
+# 如果你不确定缺什么依赖，可以在容器里运行
+# ldd /usr/local/bin/chrome-headless-shell | grep "not found"
+ENV CHROME_PATH=/usr/local/bin/chrome-headless-shell
