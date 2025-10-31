@@ -38,6 +38,9 @@ jobs:
             dockerfile: Dockerfile.headless
             tag: chrome-headless-shell
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Build ${{ matrix.image.key }}
         uses: ./.github/actions/docker-build
         with:
@@ -52,6 +55,9 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Determine Dockerfile and tag
         id: vars
         run: |
