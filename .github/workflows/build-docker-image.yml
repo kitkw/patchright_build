@@ -50,4 +50,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          package-name: patchright
+          package_name: patchright
+          untagged_only: true
+          owner_type: user
