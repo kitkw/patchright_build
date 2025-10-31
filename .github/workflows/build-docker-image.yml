@@ -44,3 +44,10 @@ jobs:
             org.opencontainers.image.licenses=MIT
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      
+      - name: Delete untagged images
+        uses: Chizkiyahu/delete-untagged-ghcr-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          package-name: patchright
