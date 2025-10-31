@@ -45,11 +45,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
-      - name: Clean untagged images
-        uses: dataaxiom/ghcr-cleaner@v1
+      - name: Clean up untagged images
+        uses: dataaxiom/ghcr-cleanup-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          package: patchright
           owner: ${{ github.repository_owner }}
+          package: patchright
+          untagged: true
 
 
