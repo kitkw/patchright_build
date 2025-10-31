@@ -17,7 +17,8 @@ on:
         default: 'chrome'
 
 jobs:
-  build:
+  build-all:
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.type == 'all' }}
     timeout-minutes: 20
     runs-on: ubuntu-latest
     permissions:
@@ -36,46 +37,55 @@ jobs:
           - key: headless
             dockerfile: Dockerfile.headless
             tag: chrome-headless-shell
-    if: |
-      github.event_name == 'schedule' ||
-      github.event.inputs.type == 'all' ||
-      github.event.inputs.type == matrix.image.key
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Build ${{ matrix.image.key }}
+        uses: ./.github/actions/docker-build
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: ${{ matrix.image.dockerfile }}
+          tag: ${{ matrix.image.tag }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  build-single:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.type != 'all' }}
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Determine Dockerfile and tag
+        id: vars
+        run: |
+          case "${{ github.event.inputs.type }}" in
+            chrome)
+              echo "dockerfile=Dockerfile.chrome" >> $GITHUB_OUTPUT
+              echo "tag=chrome" >> $GITHUB_OUTPUT
+              ;;
+            chromium)
+              echo "dockerfile=Dockerfile.chromium" >> $GITHUB_OUTPUT
+              echo "tag=chromium" >> $GITHUB_OUTPUT
+              ;;
+            headless)
+              echo "dockerfile=Dockerfile.headless" >> $GITHUB_OUTPUT
+              echo "tag=chrome-headless-shell" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "Unsupported type: ${{ github.event.inputs.type }}"
+              exit 1
+              ;;
+          esac
 
-      - name: Build and push ${{ matrix.image.key }}
-        uses: docker/build-push-action@v5
+      - name: Build ${{ github.event.inputs.type }}
+        uses: ./.github/actions/docker-build
         with:
-          context: .
-          file: ${{ matrix.image.dockerfile }}
-          push: true
-          platforms: linux/amd64
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/patchright:${{ matrix.image.tag }}
-          provenance: false
-          sbom: false
-          labels: |
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.description=HTTP Server
-            org.opencontainers.image.licenses=MIT
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          dockerfile: ${{ steps.vars.outputs.dockerfile }}
+          tag: ${{ steps.vars.outputs.tag }}
 
   cleanup:
-    timeout-minutes: 20
-    needs: build
+    needs:
+      - build-all
+      - build-single
     if: ${{ always() }}
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     permissions:
       packages: write
