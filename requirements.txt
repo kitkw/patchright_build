@@ -17,6 +17,7 @@ patchright
 protobuf
 psutil
 pyee
+PySocks
 pytz
 requests
 sympy
