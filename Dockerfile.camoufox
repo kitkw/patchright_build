@@ -43,7 +43,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libatk1.0-0 \
     # GLib/GIO 相关
     libglib2.0-0 \
-    libgio-fam \
     libgobject-2.0-0 \
     # DBus
     libdbus-1-3 \
