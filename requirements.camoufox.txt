@@ -1,0 +1,7 @@
+aiohttp
+camoufox[geoip]
+filelock
+numpy
+opencv_python_headless
+Pillow
+pytz

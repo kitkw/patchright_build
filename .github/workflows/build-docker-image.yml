@@ -14,6 +14,7 @@ on:
           - chrome
           - chromium
           - headless
+          - camoufox
         default: 'chrome'
 
 jobs:
@@ -37,6 +38,9 @@ jobs:
           - key: headless
             dockerfile: Dockerfile.headless
             tag: chrome-headless-shell
+          - key: camoufox
+            dockerfile: Dockerfile.camoufox
+            tag: camoufox
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -74,6 +78,10 @@ jobs:
             headless)
               echo "dockerfile=Dockerfile.headless" >> $GITHUB_OUTPUT
               echo "tag=chrome-headless-shell" >> $GITHUB_OUTPUT
+              ;;
+            camoufox)
+              echo "dockerfile=Dockerfile.camoufox" >> $GITHUB_OUTPUT
+              echo "tag=camoufox" >> $GITHUB_OUTPUT
               ;;
             *)
               echo "Unsupported type: ${{ github.event.inputs.type }}"
