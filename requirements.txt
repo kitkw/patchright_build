@@ -13,7 +13,7 @@ onnxruntime
 opencv-python-headless
 packaging
 pillow
-patchright
+patchright==1.56.0
 protobuf
 psutil
 pyee
