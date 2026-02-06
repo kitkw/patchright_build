@@ -24,3 +24,5 @@ sympy
 typing_extensions
 urllib3
 zope.interface
+aiohttp
+filelock
